@@ -1,0 +1,14 @@
+---
+
+- hosts: all
+  become: yes
+  become_method: sudo
+
+  vars_files:
+     - vars/global_vars.yml
+
+  tasks:
+
+# Update hosts
+     - name: Update hosts file
+       action: template src={{ template_hosts }} dest=/etc/hosts

@@ -1,0 +1,9 @@
+# /etc/hosts
+
+127.0.0.1	localhost
+
+# Search Head Splunk
+192.168.56.10	sh-splunk
+
+# Indexer Splunk
+192.168.56.20	idx-splunk

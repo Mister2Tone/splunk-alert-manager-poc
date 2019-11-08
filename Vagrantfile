@@ -27,7 +27,6 @@ Vagrant.configure("2") do |config|
 		config.vm.define machine[:hostname] do |node|
 		
 		   node.vm.box = machine[:box]
-		   config.ssh.insert_key = false
 		   node.vm.hostname = machine[:hostname]
 		   node.vm.network "private_network", ip: machine[:ip]
 
@@ -35,18 +34,27 @@ Vagrant.configure("2") do |config|
 		      vb.customize ["modifyvm", :id, "--memory", machine[:ram], "--cpus", machine[:cpu]]
 		      vb.name = machine[:hostname]
 		   end
+
+	           config.ssh.insert_key = false
+	           config.ssh.private_key_path = ["~/.vagrant.d/insecure_private_key","~/.ssh/id_rsa"]
+		   config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
+
+		   config.vm.provision "shell", inline: <<-EOC
+		      sudo sed -i -e "\\#PasswordAuthentication yes# s#PasswordAuthentication yes#PasswordAuthentication no#g" /etc/ssh/sshd_config
+		      sudo systemctl restart sshd
+		      echo "finished"
+		   EOC
+
 		end
 
 	end
 
-# =====> Ansible <=======
-# 	config.vm.provision "ansible" do |ansible|
-# 	   ansible.limit = "all"
-# 	   ansible.playbook = "playbook.yml"
-# 	   #ansible.inventory_path = "ansible_inventory"
-# 	   #ansible.host_key_checking = false
-# 	   #ansible.verbose = "v"
-# 	end
-# =======================
+ 	config.vm.provision "ansible" do |ansible|
+ 	   #ansible.limit = "all"
+ 	   ansible.playbook = "playbook.yml"
+ 	   #ansible.inventory_path = "ansible_inventory"
+ 	   #ansible.host_key_checking = false
+ 	   #ansible.verbose = "v"
+ 	end
 
 end

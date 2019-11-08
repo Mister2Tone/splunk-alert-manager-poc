@@ -1,0 +1,10 @@
+---
+
+# Definition of the hosts file
+template_hosts: "hosts"
+
+# Value of the admin password to be set
+admin_passwd: admin
+
+# root path for Splunk
+splunk_installpath: /opt
