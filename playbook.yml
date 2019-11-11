@@ -9,6 +9,41 @@
 
   tasks:
 
-# Update hosts
      - name: Update hosts file
        action: template src={{ template_hosts }} dest=/etc/hosts
+    
+     - name: Set timezone to Asia/Bangkok
+       timezone:
+          name: Asia/Bangkok
+
+     - name: Create the system splunk account for splunk
+       user: name=splunk comment="system account for Splunk" shell=/bin/bash state=present
+
+     - name: Create the .ssh directory
+       file: path=/home/splunk/.ssh state=directory mode=0700 owner=splunk group=splunk
+
+     - name: Deploy the private key on VMs
+       copy: src=~/.ssh/id_rsa dest=/home/splunk/.ssh/id_rsa owner=splunk group=splunk mode=0600
+
+     - name: Deploy the public key on VMs
+       copy: src=~/.ssh/id_rsa.pub dest=/home/splunk/.ssh/id_rsa.pub owner=splunk group=splunk mode=0600
+
+     - name: Check service Splunk is exists
+       stat: path=/etc/init.d/splunk
+       register: boot_splunk
+
+     - name: Start Splunk and accept license
+       command: "{{ splunk_installpath }}/splunk/bin/splunk start --answer-yes --no-prompt --accept-license --seed-passwd changeme"
+       async: 60
+       poll: 5
+       become: yes
+       become_user: splunk 
+       ignore_errors: yes
+       register: accepted_splunk
+
+     - name: Enable boot start for Splunk & systemd managed
+       command: "{{ splunk_installpath }}/splunk/bin/splunk enable boot-start -systemd-managed 0 -user splunk"
+       when: 
+          - boot_splunk.stat.exists == false
+          - accepted_splunk.finished == 1
+       ignore_errors: yes
