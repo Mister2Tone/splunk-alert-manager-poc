@@ -4,7 +4,7 @@
 template_hosts: "hosts"
 
 # Value of the admin password to be set
-admin_passwd: admin
+admin_passwd: P@ssw0rd
 
 # root path for Splunk
 splunk_installpath: /opt

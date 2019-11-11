@@ -22,12 +22,6 @@
      - name: Create the .ssh directory
        file: path=/home/splunk/.ssh state=directory mode=0700 owner=splunk group=splunk
 
-     - name: Deploy the private key on VMs
-       copy: src=~/.ssh/id_rsa dest=/home/splunk/.ssh/id_rsa owner=splunk group=splunk mode=0600
-
-     - name: Deploy the public key on VMs
-       copy: src=~/.ssh/id_rsa.pub dest=/home/splunk/.ssh/id_rsa.pub owner=splunk group=splunk mode=0600
-
      - name: Check service Splunk is exists
        stat: path=/etc/init.d/splunk
        register: boot_splunk
@@ -47,3 +41,24 @@
           - boot_splunk.stat.exists == false
           - accepted_splunk.finished == 1
        ignore_errors: yes
+
+     - name: Lower the minimal free space required (default 5GB, => 1GB to fit VMs space)
+       command: "{{ splunk_installpath }}/splunk/bin/splunk set minfreemb 1000 -auth admin:changeme"
+       become: yes
+       become_user: splunk
+       when: accepted_splunk.finished == 1
+       ignore_errors: yes
+
+     - name: Change the admin default password
+       command: "{{ splunk_installpath }}/splunk/bin/splunk edit user admin -password '{{admin_passwd}}' -auth admin:changeme"
+       become: yes
+       become_user: splunk
+       ignore_errors: yes
+
+     - name: Check asking for password change
+       stat: path="{{ splunk_installpath }}/splunk/etc/.ui_login"
+       register: p
+
+     - name: Disable asking for password change at first connection
+       file: path="{{ splunk_installpath }}/splunk/etc/.ui_login" state=touch owner=splunk group=splunk mode=0555
+       when: not p.stat.exists
