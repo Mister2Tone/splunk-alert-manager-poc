@@ -3,15 +3,22 @@
 
 servers=[
 	{
+	 :hostname => "master-splunk",
+	 :ip => "192.168.56.5",
+	 :box => "badarsebard/centos-7.5-splunk",
+	 :ram => 1024,
+	 :cpu => 1
+	},
+	{
 	 :hostname => "sh-splunk",
-	 :ip => "192.168.56.10",
+	 :ip => "192.168.56.15",
 	 :box => "badarsebard/centos-7.5-splunk",
 	 :ram => 1024,
 	 :cpu => 1
 	},
 	{
 	  :hostname => "idx-splunk",
-          :ip => "192.168.56.20",
+          :ip => "192.168.56.25",
           :box => "badarsebard/centos-7.5-splunk",
           :ram => 1024,
           :cpu => 1
