@@ -12,7 +12,7 @@
 
 ## Tasks 
 - [x] 1 Master + 1 SH + 1 IDX (modify Vagrantfile)
-- [ ] Separate Ansible-Playbook for running vagrant smoothly
+- [ ] Separate Ansible-Playbook for running vagrant smoothly<br/>
       init-playbook -> deploysplunk-playbook -> config Master node -> config Search Head -> config Indexer
   - [ ] init-playbook
     - setup /etc/hosts, timezone, splunk-user
