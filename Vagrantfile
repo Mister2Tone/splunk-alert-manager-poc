@@ -45,11 +45,12 @@ Vagrant.configure("2") do |config|
 
 	           config.ssh.insert_key = false
 	           config.ssh.private_key_path = ["~/.vagrant.d/insecure_private_key","~/.ssh/id_rsa"]
-		   config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"
 
 		end
 
 	end
+	
+	config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/authorized_keys"	
 
  	config.vm.provision "ansible" do |ansible|
  	   #ansible.limit = "all"
